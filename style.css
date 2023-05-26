@@ -1,0 +1,40 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f5f5f5;
+    font-family: Arial, sans-serif;
+}
+
+.timer-container {
+    text-align: center;
+}
+
+.timer {
+    font-size: 4em;
+    margin-bottom: 1em;
+}
+
+.progress-bar {
+    position: relative;
+    height: 20px;
+    width: 100%;
+    background: #ddd;
+}
+
+.progress {
+    position: absolute;
+    height: 100%;
+    background: #4CAF50;
+}
+
+.controls {
+    margin-top: 1em;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 1.2em;
+}
