@@ -1,9 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const accessToken = urlParams.get('access_token');
 
-console.log(accessToken); // Just for debugging, remove this line when you're done testing
-
-
 const timerDisplay = document.querySelector('#timer');
 const playPauseButton = document.querySelector('#play-pause-btn');
 const skipButton = document.querySelector('#skip-btn');
