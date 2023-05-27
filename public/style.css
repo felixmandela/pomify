@@ -1,0 +1,100 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f5f5f5;
+    font-family: Arial, sans-serif;
+}
+
+.timer-container {
+    position: relative;
+    padding: 30px;
+    width: 340px;
+    height: 320px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 15px;
+    box-shadow: 0px 10px 30px -5px rgba(0, 0, 0, 0.3);
+}
+
+.timer {
+    font-size: 5em;
+}
+
+.progress-bar {
+    position: relative;
+    height: 10px;
+    width: 70%;
+    background: #ddd;
+    margin-bottom: 40px;
+}
+
+.progress {
+    position: absolute;
+    height: 100%;
+    background: #292929;
+}
+
+.controls {
+    width: 100%;
+    display: flex;
+    column-gap: 10px;
+    margin-top: 10px;
+}
+
+button {
+    font-size: 0.7em;
+    font-weight: bold;
+    border-radius: 10px;
+    width: 50%;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.settings {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.setting-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+
+.settings label {
+    color: #A49393;
+    font-size: 1em;
+}
+
+.settings input {
+    width: 60px;
+    text-align: center;
+    border: none;
+    background: #f5f5f5;
+    font-size: 1.2em;
+}
+
+
+button:hover {
+    background: #292929;
+    color: #F7F2E7;
+}
