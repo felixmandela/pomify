@@ -1,70 +1,84 @@
-let timer = document.getElementById('timer');
-let progressBar = document.getElementById('progress');
-let playPauseBtn = document.getElementById('play-pause-btn');
-let skipBtn = document.getElementById('skip-btn');
-let notification = document.getElementById('notification');
+const timerDisplay = document.querySelector('#timer');
+const playPauseButton = document.querySelector('#play-pause-btn');
+const skipButton = document.querySelector('#skip-btn');
+const progressBar = document.querySelector("#progress");
+const workDurationInput = document.querySelector('#work-duration');
+const breakDurationInput = document.querySelector('#break-duration');
 
-let isRunning = false;
-let workTime = 25 * 60;
-let breakTime = 5 * 60;
-let remainingTime = workTime;
-let currentInterval = workTime;
+let isWorkTime = true;
+let isPaused = true;
+let workDuration = workDurationInput.value * 60; // get value from input
+let breakDuration = breakDurationInput.value * 60; // get value from input
+let timeLeft = workDuration;
+let timeSpent = 0; // Initialize timeSpent variable
 
-function startTimer() {
-    if (isRunning) return;
-    isRunning = true;
-    countdown = setInterval(function () {
-        if (remainingTime <= 0) {
-            clearInterval(countdown);
-            notification.play();
-            switchInterval();
-            startTimer();
+// Update workDuration and breakDuration when the inputs change
+workDurationInput.addEventListener('change', () => {
+    workDuration = workDurationInput.value * 60;
+    if (isWorkTime) {
+        timeLeft = workDuration;
+        timerDisplay.textContent = formatTime(timeLeft);
+    }
+});
+
+breakDurationInput.addEventListener('change', () => {
+    breakDuration = breakDurationInput.value * 60;
+    if (!isWorkTime) {
+        timeLeft = breakDuration;
+        timerDisplay.textContent = formatTime(timeLeft);
+    }
+});
+
+
+
+// time formatting
+function formatTime(time) {
+    let minutes = Math.floor(time / 60);
+    let seconds = time % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function updateTimer() {
+    if (!isPaused) {
+        if (timeLeft > 0) {
+            timeSpent++; // Increase timeSpent every second
+            let progressPercentage = (timeSpent / (isWorkTime ? workDuration : breakDuration)) * 100;
+            progressBar.style.width = progressPercentage + "%"; // Modify the width of the progress bar
+            timeLeft--;
+            timerDisplay.textContent = formatTime(timeLeft);
         } else {
-            remainingTime--;
-            updateDisplay();
+            isWorkTime = !isWorkTime;
+            timeLeft = isWorkTime ? workDuration : breakDuration;
+            timeSpent = 0; // Reset timeSpent
+            progressBar.style.width = "0%"; // Reset progress bar
         }
-    }, 1000);
-}
-
-function pauseTimer() {
-    isRunning = false;
-    clearInterval(countdown);
-}
-
-function switchInterval() {
-    if (currentInterval === workTime) {
-        currentInterval = breakTime;
-        remainingTime = breakTime;
-    } else {
-        currentInterval = workTime;
-        remainingTime = workTime;
     }
-    updateDisplay();
 }
 
-function updateDisplay() {
-    let minutes = Math.floor(remainingTime / 60);
-    let seconds = remainingTime % 60;
-    timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    progressBar.style.width = `${(1 - remainingTime / currentInterval) * 100}%`;
-}
 
-playPauseBtn.addEventListener('click', function () {
-    if (isRunning) {
-        pauseTimer();
-        this.textContent = 'Play';
+// Event listeners for buttons
+playPauseButton.addEventListener('click', () => {
+    if (isPaused === false) {
+        isPaused = true;
+        playPauseButton.textContent = 'Play';
     } else {
-        startTimer();
-        this.textContent = 'Pause';
+        isPaused = false;
+        playPauseButton.textContent = 'Pause';
     }
 });
 
-skipBtn.addEventListener('click', function () {
-    switchInterval();
-    if (isRunning) {
-        pauseTimer();
-        startTimer();
-    }
+
+
+skipButton.addEventListener('click', () => {
+    isWorkTime = !isWorkTime;
+    timeLeft = isWorkTime ? workDuration : breakDuration;
+    timeSpent = 0; // Reset timeSpent
+    progressBar.style.width = "0%"; // Reset progress bar
+    timerDisplay.textContent = formatTime(timeLeft);
 });
 
-updateDisplay();
+
+
+// Update the timer every second
+let interval = setInterval(updateTimer, 1000);
+
