@@ -92,13 +92,16 @@ playPauseButton.addEventListener('click', () => {
     if (isPaused === false) {
         isPaused = true;
         playPauseButton.textContent = 'Play';
-        handlePlayback(false); // Pause Spotify playback
+        // Only attempt to control Spotify playback if an access token exists
+        if (accessToken) handlePlayback(false);
     } else {
         isPaused = false;
         playPauseButton.textContent = 'Pause';
-        handlePlayback(true); // Start Spotify playback
+        // Only attempt to control Spotify playback if an access token exists
+        if (accessToken) handlePlayback(true);
     }
 });
+
 
 // Start or pause Spotify playback
 function handlePlayback(isPlaying) {
@@ -116,10 +119,13 @@ function handlePlayback(isPlaying) {
                         handlePlayback(isPlaying); // Retry the playback request
                     })
                     .catch(error => console.error(error));
+            } else if (!response.ok) { // If there is an error with the playback
+                showNotification("Please open Spotify on your device and ensure a track is playing.");
             }
         })
         .catch(error => console.error(error));
 }
+
 
 skipButton.addEventListener('click', () => {
     isWorkTime = !isWorkTime;
@@ -129,6 +135,16 @@ skipButton.addEventListener('click', () => {
     timerDisplay.textContent = formatTime(timeLeft);
 });
 
+function showNotification(message) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.classList.remove('hidden');
+    notification.classList.add('show');
+    setTimeout(() => {
+        notification.classList.remove('show');
+        notification.classList.add('hidden');
+    }, 3000); // Hide the notification after 3 seconds
+}
 
 // Update the timer every second
 let interval = setInterval(updateTimer, 1000);
