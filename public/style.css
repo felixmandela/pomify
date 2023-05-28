@@ -98,3 +98,26 @@ button:hover {
     background: #292929;
     color: #F7F2E7;
 }
+
+.spotify-button {
+    margin-top: 1em;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    background: #1db954;
+    /* Spotify Green */
+    color: #FFFFFF;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.spotify-button:hover {
+    background: #1ed760;
+    /* Slightly lighter green for hover effect */
+}
+
+.spotify-button:active {
+    background: #1aa34a;
+    /* Slightly darker green for active/click effect */
+}

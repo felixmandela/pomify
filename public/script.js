@@ -1,5 +1,33 @@
+let accessToken;
+const loginButton = document.querySelector('#spotify-login-btn');
+const openSpotifyButton = document.querySelector('#open-spotify-btn');
+
+// Load the access token from the URL if present
 const urlParams = new URLSearchParams(window.location.search);
-const accessToken = urlParams.get('access_token');
+if (urlParams.has('access_token')) {
+    accessToken = urlParams.get('access_token');
+    // Hide the login button and show the "Open Spotify" button
+    loginButton.style.display = 'none';
+    openSpotifyButton.style.display = 'block';
+} else {
+    loginButton.style.display = 'block';
+    openSpotifyButton.style.display = 'none';
+}
+
+openSpotifyButton.addEventListener('click', () => {
+    window.open('https://open.spotify.com', '_blank');
+});
+
+loginButton.addEventListener('click', () => {
+    // Make a GET request to the server's /login endpoint
+    fetch('http://localhost:3000/login')
+        .then(response => response.json())
+        .then(data => {
+            // Redirect the user to the Spotify authorization URL
+            window.location.href = data.url;
+        })
+        .catch(error => console.error(error));
+});
 
 const timerDisplay = document.querySelector('#timer');
 const playPauseButton = document.querySelector('#play-pause-btn');
@@ -100,24 +128,6 @@ skipButton.addEventListener('click', () => {
     progressBar.style.width = "0%"; // Reset progress bar
     timerDisplay.textContent = formatTime(timeLeft);
 });
-
-
-const loginButton = document.querySelector('#spotify-login-btn');
-
-loginButton.addEventListener('click', () => {
-    // Make a GET request to the server's /login endpoint
-    fetch('http://localhost:3000/login')
-        .then(response => response.json())
-        .then(data => {
-            // Redirect the user to the Spotify authorization URL
-            window.location.href = data.url;
-        })
-        .catch(error => console.error(error));
-});
-
-
-
-
 
 
 // Update the timer every second
