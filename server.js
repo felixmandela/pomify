@@ -14,6 +14,8 @@ const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
 
+let refreshToken = '';
+
 app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
@@ -52,10 +54,29 @@ app.get('/callback', (req, res) => {
     })
         .then(response => response.json())
         .then(data => {
+            refreshToken = data.refresh_token;
             res.redirect(`http://localhost:5500/pomodoro%20x%20spotify/public/?access_token=${data.access_token}`);
         });
 });
 
+app.get('/refresh_token', (req, res) => {
+    const params = {
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET
+    };
+
+    fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: queryString.stringify(params)
+    })
+        .then(response => response.json())
+        .then(data => {
+            res.json({ access_token: data.access_token });
+        });
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

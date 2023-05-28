@@ -64,35 +64,34 @@ playPauseButton.addEventListener('click', () => {
     if (isPaused === false) {
         isPaused = true;
         playPauseButton.textContent = 'Play';
-
-        // Pause Spotify playback
-        fetch('https://api.spotify.com/v1/me/player/pause', {
-            method: 'PUT',
-            headers: { 'Authorization': 'Bearer ' + accessToken }
-        })
-            .catch(error => console.error(error));
+        handlePlayback(false); // Pause Spotify playback
     } else {
         isPaused = false;
         playPauseButton.textContent = 'Pause';
-
-        // Start Spotify playback
-        const playlistId = '0vvXsWCC9xrXsKd4FyS8kM';  // replace this with your Spotify playlist ID
-        const body = {
-            context_uri: `spotify:playlist:${playlistId}`
-        };
-        fetch('https://api.spotify.com/v1/me/player/play', {
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + accessToken,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        })
-            .catch(error => console.error(error));
+        handlePlayback(true); // Start Spotify playback
     }
 });
 
-
+// Start or pause Spotify playback
+function handlePlayback(isPlaying) {
+    const url = isPlaying ? 'https://api.spotify.com/v1/me/player/play' : 'https://api.spotify.com/v1/me/player/pause';
+    fetch(url, {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + accessToken }
+    })
+        .then(response => {
+            if (response.status === 401) { // Access token has expired
+                fetch('http://localhost:3000/refresh_token')
+                    .then(response => response.json())
+                    .then(data => {
+                        accessToken = data.access_token; // Update the access token
+                        handlePlayback(isPlaying); // Retry the playback request
+                    })
+                    .catch(error => console.error(error));
+            }
+        })
+        .catch(error => console.error(error));
+}
 
 skipButton.addEventListener('click', () => {
     isWorkTime = !isWorkTime;
