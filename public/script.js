@@ -92,15 +92,20 @@ playPauseButton.addEventListener('click', () => {
     if (isPaused === false) {
         isPaused = true;
         playPauseButton.textContent = 'Play';
-        // Only attempt to control Spotify playback if an access token exists
-        if (accessToken) handlePlayback(false);
+        // Only handle playback if an access token exists
+        if (accessToken) {
+            handlePlayback(false); // Pause Spotify playback
+        }
     } else {
         isPaused = false;
         playPauseButton.textContent = 'Pause';
-        // Only attempt to control Spotify playback if an access token exists
-        if (accessToken) handlePlayback(true);
+        // Only handle playback if an access token exists
+        if (accessToken) {
+            handlePlayback(true); // Start Spotify playback
+        }
     }
 });
+
 
 
 // Start or pause Spotify playback
