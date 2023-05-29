@@ -154,3 +154,51 @@ function showNotification(message) {
 // Update the timer every second
 let interval = setInterval(updateTimer, 1000);
 
+
+function fetchSpotifyPlayerState() {
+    // Check if the user has logged in before trying to fetch the Spotify status
+    if (!accessToken) {
+        return;
+    }
+
+    fetch('https://api.spotify.com/v1/me/player', {
+        headers: { 'Authorization': 'Bearer ' + accessToken }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const deviceElement = document.querySelector('#spotify-device');
+            const trackElement = document.querySelector('#spotify-track');
+
+            if (data.device) {
+                deviceElement.textContent = 'Device: ' + data.device.name;
+            } else {
+                deviceElement.textContent = 'Device: No active device. Please open Spotify and connect to a device.';
+            }
+
+            if (data && data.item) {
+                trackElement.textContent = 'Now playing: ' + data.item.name + ' by ' + data.item.artists[0].name;
+            } else {
+                trackElement.textContent = 'Now playing: No track playing. Please initiate playback on Spotify.';
+            }
+        })
+        .catch(error => {
+            const deviceElement = document.querySelector('#spotify-device');
+            const trackElement = document.querySelector('#spotify-track');
+
+            deviceElement.textContent = 'Device: Error retrieving device status.';
+            trackElement.textContent = 'Now playing: Error retrieving track. Please initiate playback on Spotify.';
+
+            console.error('Error:', error);
+        });
+}
+
+// Call the function every 5 seconds to keep the status updated
+setInterval(fetchSpotifyPlayerState, 5000);
+
+
+

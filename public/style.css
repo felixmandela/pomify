@@ -114,12 +114,10 @@ button:hover {
 
 .spotify-button:hover {
     background: #1ed760;
-    /* Slightly lighter green for hover effect */
 }
 
 .spotify-button:active {
     background: #1aa34a;
-    /* Slightly darker green for active/click effect */
 }
 
 .notification {
@@ -144,4 +142,24 @@ button:hover {
 
 .hidden {
     display: none;
+}
+
+#spotify-status {
+    width: 300px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    box-shadow: 0px 5px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+
+#spotify-device,
+#spotify-track {
+    font-size: 0.9em;
 }

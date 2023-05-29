@@ -74,9 +74,14 @@ app.get('/refresh_token', (req, res) => {
     })
         .then(response => response.json())
         .then(data => {
-            res.json({ access_token: data.access_token });
+            if (data.error) {
+                res.status(500).json({ error: data.error });
+            } else {
+                res.json({ access_token: data.access_token });
+            }
         });
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
