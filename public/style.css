@@ -18,7 +18,7 @@ body {
     position: relative;
     padding: 30px;
     width: 340px;
-    height: 320px;
+    height: 420px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -104,7 +104,6 @@ button:hover {
     padding: 0.5em 1em;
     text-decoration: none;
     background: #1db954;
-    /* Spotify Green */
     color: #FFFFFF;
     border: none;
     border-radius: 30px;
@@ -145,21 +144,61 @@ button:hover {
 }
 
 #spotify-status {
-    width: 300px;
-    height: 50px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    border: 1px solid #ddd;
+    background-color: #C0C085;
+    color: #0B380B;
     padding: 10px;
-    border-radius: 10px;
-    margin-top: 10px;
-    box-shadow: 0px 5px 10px -5px rgba(0, 0, 0, 0.2);
+    font-family: 'Courier New', monospace;
+    border-radius: 5px;
+    box-shadow: inset 2px 2px 5px #0B380B;
+    width: 300px;
+    height: 60px;
+    overflow: hidden;
 }
 
+#initial-status {
+    font-size: 0.9rem;
+}
+
+.status-container-1 {
+    width: 40%;
+    display: inline-block;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-align: right;
+
+}
+
+.status-container-2 {
+    display: inline-block;
+    width: 55%;
+    font-size: 0.9rem;
+    overflow: hidden;
+}
 
 #spotify-device,
 #spotify-track {
-    font-size: 0.9em;
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee 10s infinite linear;
+}
+
+
+
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0%);
+    }
+
+    25% {
+        transform: translateX(0%);
+    }
+
+    75% {
+        transform: translateX(-70%);
+    }
+
+    100% {
+        transform: translateX(-70%);
+    }
 }

@@ -33,6 +33,7 @@ app.get('/login', (req, res) => {
     });
 });
 
+// get code after authorize
 app.get('/callback', (req, res) => {
     const code = req.query.code;
     const params = {
@@ -59,6 +60,8 @@ app.get('/callback', (req, res) => {
         });
 });
 
+
+
 app.get('/refresh_token', (req, res) => {
     const params = {
         grant_type: 'refresh_token',
@@ -77,12 +80,18 @@ app.get('/refresh_token', (req, res) => {
             if (data.error) {
                 res.status(500).json({ error: data.error });
             } else {
+                // Update refresh token if a new one is provided
+                if (data.refresh_token) {
+                    refreshToken = data.refresh_token;
+                }
                 res.json({ access_token: data.access_token });
             }
         });
 });
 
 
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+

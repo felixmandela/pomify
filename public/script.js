@@ -132,6 +132,7 @@ function handlePlayback(isPlaying) {
 }
 
 
+
 skipButton.addEventListener('click', () => {
     isWorkTime = !isWorkTime;
     timeLeft = isWorkTime ? workDuration : breakDuration;
@@ -155,9 +156,13 @@ function showNotification(message) {
 let interval = setInterval(updateTimer, 1000);
 
 
+
+
 function fetchSpotifyPlayerState() {
     // Check if the user has logged in before trying to fetch the Spotify status
     if (!accessToken) {
+        const initialStatus = document.querySelector('#initial-status');
+        initialStatus.textContent = 'Connect to Spotify and play a track to use the feature.';
         return;
     }
 
@@ -171,27 +176,48 @@ function fetchSpotifyPlayerState() {
             return response.json();
         })
         .then(data => {
+            const initialStatus = document.querySelector('#initial-status');
             const deviceElement = document.querySelector('#spotify-device');
             const trackElement = document.querySelector('#spotify-track');
+            const nowPlayingStatus = document.querySelector('#now-playing');
+            const deviceStatus = document.querySelector('#device-status');
 
+
+            initialStatus.textContent = '';
             if (data.device) {
-                deviceElement.textContent = 'Device: ' + data.device.name;
+                deviceStatus.textContent = 'Device: ';
+                deviceElement.textContent = data.device.name;
             } else {
-                deviceElement.textContent = 'Device: No active device. Please open Spotify and connect to a device.';
+                deviceStatus.textContent = 'Device: ';
+                deviceElement.textContent = 'No active device. Please open Spotify and connect to a device.';
             }
 
             if (data && data.item) {
-                trackElement.textContent = 'Now playing: ' + data.item.name + ' by ' + data.item.artists[0].name;
+                nowPlayingStatus.textContent = 'Now playing: ';
+                trackElement.textContent = data.item.name + ' by ' + data.item.artists[0].name;
             } else {
-                trackElement.textContent = 'Now playing: No track playing. Please initiate playback on Spotify.';
+                nowPlayingStatus.textContent = 'Now playing: ';
+                trackElement.textContent = 'No track playing. Please initiate playback on Spotify.';
             }
         })
         .catch(error => {
+            const initialStatus = document.querySelector('#initial-status');
             const deviceElement = document.querySelector('#spotify-device');
             const trackElement = document.querySelector('#spotify-track');
+            const nowPlayingStatus = document.querySelector('#now-playing');
+            const deviceStatus = document.querySelector('#device-status');
 
-            deviceElement.textContent = 'Device: Error retrieving device status.';
-            trackElement.textContent = 'Now playing: Error retrieving track. Please initiate playback on Spotify.';
+
+            initialStatus.textContent = '';
+            deviceStatus.textContent = 'Device: '
+            deviceElement.textContent = 'Error retrieving device status.';
+            if (error.message.includes('premium')) {
+                nowPlayingStatus.textContent = 'Now playing: '
+                trackElement.textContent = 'Your account is not premium. You need a premium account to use this feature.';
+            } else {
+                nowPlayingStatus.textContent = 'Now playing: '
+                trackElement.textContent = 'Error retrieving track. Please initiate playback on Spotify.';
+            }
 
             console.error('Error:', error);
         });
