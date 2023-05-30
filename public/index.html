@@ -19,16 +19,25 @@
             <button id="play-pause-btn">Play</button>
             <button id="skip-btn">Skip</button>
         </div>
-        <div class="settings">
-            <div class="setting-container">
-                <label for="work-duration">Work Duration (min): </label>
-                <input type="number" id="work-duration" min="1" value="25">
-            </div>
-            <div class="setting-container">
-                <label for="break-duration">Break Duration (min): </label>
-                <input type="number" id="break-duration" min="1" value="5">
+        <button id="settings-btn">Settings</button>
+
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <span id="close-btn">&times;</span>
+                <div class="settings">
+                    <div class="setting-container">
+                        <label for="work-duration">Work Duration (min): </label>
+                        <input type="number" id="work-duration" min="1" value="25">
+                    </div>
+                    <div class="setting-container">
+                        <label for="break-duration">Break Duration (min): </label>
+                        <input type="number" id="break-duration" min="1" value="5">
+                    </div>
+                </div>
+                <button id="apply-settings">Apply Changes</button>
             </div>
         </div>
+
         <div id="spotify-status">
             <p id="initial-status">Checking status...</p>
             <div class="status-container-1">
@@ -44,11 +53,12 @@
                 <p id="spotify-device"></p>
             </div>
         </div>
+        <button id="spotify-login-btn" class="spotify-button">Log in to Spotify</button>
+        <button id="open-spotify-btn" class="spotify-button" style="display: none;">Open Spotify</button>
     </div>
 
 
-    <button id="spotify-login-btn" class="spotify-button">Log in to Spotify</button>
-    <button id="open-spotify-btn" class="spotify-button" style="display: none;">Open Spotify</button>
+
     <div id="notification" class="notification hidden">Notification message</div>
 
     <audio id="notification" src=""></audio>

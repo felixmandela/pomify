@@ -43,24 +43,6 @@ let breakDuration = breakDurationInput.value * 60; // get value from input
 let timeLeft = workDuration;
 let timeSpent = 0; // Initialize timeSpent variable
 
-// Update workDuration and breakDuration when the inputs change
-workDurationInput.addEventListener('change', () => {
-    workDuration = workDurationInput.value * 60;
-    if (isWorkTime) {
-        timeLeft = workDuration;
-        timerDisplay.textContent = formatTime(timeLeft);
-    }
-});
-
-breakDurationInput.addEventListener('change', () => {
-    breakDuration = breakDurationInput.value * 60;
-    if (!isWorkTime) {
-        timeLeft = breakDuration;
-        timerDisplay.textContent = formatTime(timeLeft);
-    }
-});
-
-
 
 // time formatting
 function formatTime(time) {
@@ -154,6 +136,67 @@ function showNotification(message) {
 
 // Update the timer every second
 let interval = setInterval(updateTimer, 1000);
+
+
+// settings modal
+let modal = document.getElementById("settings-modal");
+let settingsButton = document.getElementById("settings-btn");
+let closeButton = document.getElementById("close-btn");
+let modalContent = document.querySelector('.modal-content');
+let applySettingsButton = document.getElementById("apply-settings");
+
+let tempWorkDuration = null;
+let tempBreakDuration = null;
+
+settingsButton.onclick = function () {
+    modal.classList.add('show');
+}
+
+closeButton.onclick = function () {
+    modal.classList.remove('show');
+}
+
+window.onclick = function (event) {
+    if (event.target == modal) {
+        modal.classList.remove('show');
+    }
+}
+
+
+// Store the new settings temporarily
+workDurationInput.addEventListener('change', (e) => {
+    tempWorkDuration = e.target.value;
+});
+
+breakDurationInput.addEventListener('change', (e) => {
+    tempBreakDuration = e.target.value;
+});
+
+// Apply the new settings
+applySettingsButton.addEventListener('click', () => {
+    if (tempWorkDuration !== null) {
+        workDuration = tempWorkDuration * 60;
+        if (isWorkTime) {
+            timeLeft = workDuration;
+            timerDisplay.textContent = formatTime(timeLeft);
+        }
+    }
+
+    if (tempBreakDuration !== null) {
+        breakDuration = tempBreakDuration * 60;
+        if (!isWorkTime) {
+            timeLeft = breakDuration;
+            timerDisplay.textContent = formatTime(timeLeft);
+        }
+
+    }
+    // Reset temporary settings
+    tempWorkDuration = null;
+    tempBreakDuration = null;
+    // To reset progress bar
+    timeSpent = 0;
+    modal.classList.remove('show');
+});
 
 
 
