@@ -298,10 +298,10 @@ button:hover {
     transform: translateX(0%);
   }
   75% {
-    transform: translateX(-70%);
+    transform: translateX(-120%);
   }
   100% {
-    transform: translateX(-70%);
+    transform: translateX(-120%);
   }
 }
 @keyframes breathe-ongoing {
