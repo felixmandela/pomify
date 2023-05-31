@@ -1,3 +1,33 @@
+:root {
+    /* Colors */
+    --main-color: #f5f5f5;
+    --secondary-color: #292929;
+    --session-status-color: #bebebe;
+    --session-status-color-ongoing: #000000;
+    --session-status-color-break: #660e0e;
+    --play-pause-color: #227e42;
+    --pause-state-color: #af3333;
+    --skip-color: #b9b9b9;
+    --primary-bg-color: #FFFFFF;
+    --secondary-bg-color: rgba(0, 0, 0, 0.1);
+    --button-hover-color: #E5E5E5;
+    --spotify-color: #1db954;
+    --spotify-hover-color: #1ed760;
+    --spotify-active-color: #1aa34a;
+    --spotify-status-color: #EDEDED;
+    --spotify-status-text-color: #292929;
+    --primary-border-radius: 10px;
+    --secondary-border-radius: 6px;
+    --primary-border-stack: 2px solid black;
+    --primary-box-shadow-stack: 7px 7px 0px 2px black;
+    --secondary-border-stack: 1px solid black;
+    --secondary-box-shadow-stack: 2px 2px 0px 1px black;
+    --sidebar-border-stack: 2px solid black;
+    --sidebar-box-shadow-stack: 5px 5px 0px 1px black;
+
+}
+
+/* Global Styles */
 * {
     padding: 0;
     margin: 0;
@@ -10,78 +40,79 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: #f5f5f5;
-    font-family: Arial, sans-serif;
+    background: var(--main-color);
+    font-family: 'Monomaniac One', sans-serif;
 }
 
+/* Timer Styles */
 .timer-container {
     position: relative;
     padding: 30px;
-    width: 340px;
-    height: 420px;
+    width: 500px;
+    min-width: 320px;
+    min-height: 300px;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: start;
+    align-items: start;
     flex-direction: column;
-    border-radius: 15px;
-    box-shadow: 0px 10px 30px -5px rgba(0, 0, 0, 0.3);
+    border-radius: var(--primary-border-radius);
+    border: var(--primary-border-stack);
+    box-shadow: var(--primary-box-shadow-stack);
 }
 
 .timer {
-    font-size: 5em;
+    font-size: 7rem;
+    color: var(--secondary-color);
+    line-height: 100%;
+}
+
+#session-status,
+#break-status {
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    color: var(--session-status-color);
 }
 
 .progress-bar {
     position: relative;
-    height: 10px;
-    width: 70%;
-    background: #ddd;
-    margin-bottom: 40px;
+    height: 20px;
+    width: 100%;
+    background: var(--secondary-bg-color);
+    border: var(--secondary-border-stack);
+    box-shadow: var(--secondary-box-shadow-stack);
+    margin-top: 20px;
 }
 
 .progress {
     position: absolute;
     height: 100%;
-    background: #292929;
+    background: var(--secondary-color);
+
+}
+
+/* Controls and Settings Styles */
+.controls,
+.setting-container,
+.settings {
+    display: flex;
 }
 
 .controls {
+    justify-content: space-between;
+    gap: 10px;
     width: 100%;
-    display: flex;
-    column-gap: 10px;
     margin-top: 10px;
-}
-
-button {
-    font-size: 0.7em;
-    font-weight: bold;
-    border-radius: 10px;
-    width: 50%;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 .settings {
-    display: flex;
     flex-direction: column;
     justify-content: space-around;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 20px;
 }
-
-.setting-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
 
 .settings label {
-    color: #A49393;
+    color: var(--secondary-color);
     font-size: 1em;
 }
 
@@ -89,36 +120,97 @@ button {
     width: 60px;
     text-align: center;
     border: none;
-    background: #f5f5f5;
     font-size: 1.2em;
 }
 
+button {
+    font-size: 0.7em;
+    font-weight: bold;
+    border-radius: var(--secondary-border-radius);
+    width: 50%;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+    border: var(--secondary-border-stack);
+    box-shadow: var(--secondary-box-shadow-stack);
+}
 
-#settings-btn {}
+#settings-btn {
+    position: absolute;
+    bottom: -60px;
+    right: -2px;
+    width: 20%;
+    border: var(--primary-border-stack);
+    box-shadow: var(--primary-box-shadow-stack);
+}
 
+#play-pause-btn {
+    background-color: var(--play-pause-color);
+    /* Default color when showing "Play" */
+    color: var(--main-color);
+}
+
+#play-pause-btn.pause {
+    background-color: var(--pause-state-color);
+    /* Color when showing "Pause" */
+    color: var(--main-color);
+}
+
+#skip-btn {
+    background-color: var(--skip-color);
+    /* Different color for the "Skip" button */
+    color: var(--secondary-color);
+}
+
+#play-pause-btn:hover {
+    background: var(--secondary-color);
+    color: var(--button-hover-color);
+}
+
+#skip-btn:hover {
+    background: var(--secondary-color);
+    color: var(--button-hover-color);
+}
+
+button:hover {
+    background: var(--secondary-color);
+    color: var(--button-hover-color);
+}
+
+/* Modal Styles */
 .modal {
     visibility: hidden;
     opacity: 0;
     position: fixed;
     z-index: 1;
-    padding-top: 100px;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: var(--secondary-bg-color);
     transition: opacity 0.5s, visibility 0.5s;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: auto;
+    background-color: var(--primary-bg-color);
     padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    transform: scale(0.9);
+    border: var(--primary-border-stack);
+    box-shadow: var(--primary-box-shadow-stack);
+    border-radius: var(--primary-border-radius);
+    width: 300px;
+    height: 230px;
     transition: transform 0.5s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .modal.show {
@@ -130,115 +222,118 @@ button {
     transform: scale(1);
 }
 
-
-.close {
-    color: #aaaaaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
-}
-
 #close-btn {
+    color: var(--secondary-color);
+    font-weight: bold;
     cursor: pointer;
+    justify-self: flex-start;
+    align-self: flex-end;
+    position: relative;
+    top: -15px;
 }
 
-button:hover {
-    background: #292929;
-    color: #F7F2E7;
+.setting-container {
+    justify-content: space-between;
 }
 
+#work-duration-label,
+#work-duration {
+    margin-bottom: 15px;
+}
+
+#work-duration-label,
+#work-duration,
+#break-duration-label,
+#break-duration {
+    border: var(--secondary-border-stack);
+    box-shadow: var(--secondary-box-shadow-stack);
+    font-size: 0.9rem;
+    padding: 3px;
+}
+
+#work-duration-label,
+#break-duration-label {
+    width: 70%;
+}
+
+#work-duration,
+#break-duration {
+    width: 20%;
+}
+
+
+#apply-settings {
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* Spotify Styles */
 .spotify-button {
     margin-top: 1em;
     padding: 0.5em 1em;
     text-decoration: none;
-    background: #1db954;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
+    background: var(--spotify-color);
+    color: var(--main-color);
     transition: background 0.3s;
+    width: 77%;
+
+    position: absolute;
+    bottom: -60px;
+    left: -2px;
+    border: var(--primary-border-stack);
+    box-shadow: var(--primary-box-shadow-stack);
 }
 
 .spotify-button:hover {
-    background: #1ed760;
+    background: var(--spotify-hover-color);
 }
 
 .spotify-button:active {
-    background: #1aa34a;
+    background: var(--spotify-active-color);
 }
 
-.notification {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px 20px;
-    background: #292929;
-    color: #fff;
-    border-radius: 5px;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    opacity: 0;
-    visibility: hidden;
-}
 
-.notification.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(20px);
-}
 
-.hidden {
-    display: none;
-}
-
+/* Spotify Status Styles */
 #spotify-status {
-    background-color: #C0C085;
-    color: #0B380B;
+    background-color: var(--spotify-status-color);
+    color: var(--spotify-status-text-color);
     padding: 10px;
     font-family: 'Courier New', monospace;
-    border-radius: 5px;
-    box-shadow: inset 2px 2px 5px #0B380B;
-    width: 300px;
+    border-radius: var(--secondary-border-radius);
+    box-shadow: inset 2px 2px 5px var(--spotify-status-text-color);
+    width: 100%;
     height: 60px;
     overflow: hidden;
+    margin-top: 20px;
 }
 
-#initial-status {
-    font-size: 0.9rem;
+#initial-status,
+.status-container-1,
+.status-container-2 {
+    font-size: 0.8rem;
+}
+
+.status-container-1,
+.status-container-2 {
+    display: inline-block;
+    overflow: hidden;
 }
 
 .status-container-1 {
     width: 40%;
-    display: inline-block;
-    font-size: 0.9rem;
-    overflow: hidden;
     text-align: right;
-
 }
 
 .status-container-2 {
-    display: inline-block;
     width: 55%;
-    font-size: 0.9rem;
-    overflow: hidden;
 }
 
 #spotify-device,
 #spotify-track {
-    display: inline-block;
     white-space: nowrap;
     animation: marquee 10s infinite linear;
 }
-
-
-
 
 @keyframes marquee {
     0% {
@@ -256,4 +351,22 @@ button:hover {
     100% {
         transform: translateX(-70%);
     }
+}
+
+@keyframes breathe-ongoing {
+    0% {
+        color: var(--session-status-color);
+    }
+
+    50% {
+        color: var(--secondary-color);
+    }
+
+    100% {
+        color: var(--session-status-color);
+    }
+}
+
+.session-active {
+    animation: breathe-ongoing 3s infinite ease-in-out;
 }

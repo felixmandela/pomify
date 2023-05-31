@@ -35,6 +35,10 @@ const skipButton = document.querySelector('#skip-btn');
 const progressBar = document.querySelector("#progress");
 const workDurationInput = document.querySelector('#work-duration');
 const breakDurationInput = document.querySelector('#break-duration');
+const sessionStatus = document.getElementById('session-status');
+const breakStatus = document.getElementById('break-status');
+
+
 
 let isWorkTime = true;
 let isPaused = true;
@@ -42,6 +46,7 @@ let workDuration = workDurationInput.value * 60; // get value from input
 let breakDuration = breakDurationInput.value * 60; // get value from input
 let timeLeft = workDuration;
 let timeSpent = 0; // Initialize timeSpent variable
+let currentSession = 1;
 
 
 // time formatting
@@ -60,6 +65,18 @@ function updateTimer() {
             timeLeft--;
             timerDisplay.textContent = formatTime(timeLeft);
         } else {
+            let sessionStatus = document.getElementById('session-status');
+            let breakStatus = document.getElementById('break-status');
+            if (isWorkTime === false) {
+                // If the session is not paused, change the text to "Ongoing"
+                sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
+                breakStatus.textContent = "Ongoing";
+                startNewSession()
+            } else {
+                // If the session is paused, change the text to "Break"
+                sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
+                breakStatus.textContent = "Break";
+            }
             isWorkTime = !isWorkTime;
             timeLeft = isWorkTime ? workDuration : breakDuration;
             timeSpent = 0; // Reset timeSpent
@@ -69,10 +86,22 @@ function updateTimer() {
 }
 
 
+function startNewSession() {
+    // Increment the session count
+    currentSession++;
+
+    // Update the session text
+    sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
+    breakStatus.textContent = "Ongoing";
+}
+
 // When the Play button is clicked, start the Spotify playback
 playPauseButton.addEventListener('click', () => {
+    breakStatus.classList.add("session-active")
     if (isPaused === false) {
         isPaused = true;
+        playPauseButton.classList.remove('pause');
+        playPauseButton.classList.add('play');
         playPauseButton.textContent = 'Play';
         // Only handle playback if an access token exists
         if (accessToken) {
@@ -80,11 +109,23 @@ playPauseButton.addEventListener('click', () => {
         }
     } else {
         isPaused = false;
+        playPauseButton.classList.remove('play');
+        playPauseButton.classList.add('pause');
         playPauseButton.textContent = 'Pause';
         // Only handle playback if an access token exists
         if (accessToken) {
             handlePlayback(true); // Start Spotify playback
         }
+    }
+
+    if (isWorkTime === true) {
+        // If the session is not paused, change the text to "Ongoing"
+        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
+        breakStatus.textContent = `Ongoing`;
+    } else {
+        // If the session is paused, change the text to "Break"
+        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
+        breakStatus.textContent = `Break`;
     }
 });
 
@@ -106,8 +147,6 @@ function handlePlayback(isPlaying) {
                         handlePlayback(isPlaying); // Retry the playback request
                     })
                     .catch(error => console.error(error));
-            } else if (!response.ok) { // If there is an error with the playback
-                showNotification("Please open Spotify on your device and ensure a track is playing.");
             }
         })
         .catch(error => console.error(error));
@@ -116,6 +155,18 @@ function handlePlayback(isPlaying) {
 
 
 skipButton.addEventListener('click', () => {
+
+    if (isWorkTime === false) {
+        // If the session is not paused, change the text to "Ongoing"
+        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
+        breakStatus.textContent = "Ongoing";
+        startNewSession()
+    } else {
+        // If the session is paused, change the text to "Break"
+        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
+        breakStatus.textContent = "Break";
+    }
+
     isWorkTime = !isWorkTime;
     timeLeft = isWorkTime ? workDuration : breakDuration;
     timeSpent = 0; // Reset timeSpent
@@ -123,16 +174,6 @@ skipButton.addEventListener('click', () => {
     timerDisplay.textContent = formatTime(timeLeft);
 });
 
-function showNotification(message) {
-    const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.classList.remove('hidden');
-    notification.classList.add('show');
-    setTimeout(() => {
-        notification.classList.remove('show');
-        notification.classList.add('hidden');
-    }, 3000); // Hide the notification after 3 seconds
-}
 
 // Update the timer every second
 let interval = setInterval(updateTimer, 1000);
@@ -205,7 +246,7 @@ function fetchSpotifyPlayerState() {
     // Check if the user has logged in before trying to fetch the Spotify status
     if (!accessToken) {
         const initialStatus = document.querySelector('#initial-status');
-        initialStatus.textContent = 'Connect to Spotify and play a track to use the feature.';
+        initialStatus.textContent = 'Link your Spotify account and play a song to synchronize the pomodoro timer with the music playback.';
         return;
     }
 
@@ -215,6 +256,9 @@ function fetchSpotifyPlayerState() {
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
+            }
+            if (response.status === 204) {
+                throw new Error('No device and track enabled');
             }
             return response.json();
         })
@@ -250,18 +294,15 @@ function fetchSpotifyPlayerState() {
             const nowPlayingStatus = document.querySelector('#now-playing');
             const deviceStatus = document.querySelector('#device-status');
 
-
-            initialStatus.textContent = '';
-            deviceStatus.textContent = 'Device: '
-            deviceElement.textContent = 'Error retrieving device status.';
             if (error.message.includes('premium')) {
-                nowPlayingStatus.textContent = 'Now playing: '
-                trackElement.textContent = 'Your account is not premium. You need a premium account to use this feature.';
+                initialStatus.textContent = 'Your account is not premium. You need a premium account to use this feature.';
             } else {
-                nowPlayingStatus.textContent = 'Now playing: '
-                trackElement.textContent = 'Error retrieving track. Please initiate playback on Spotify.';
+                initialStatus.textContent = 'Error retrieving track. Please initiate playback on Spotify.';
             }
-
+            deviceStatus.textContent = '';
+            deviceElement.textContent = '';
+            nowPlayingStatus.textContent = '';
+            trackElement.textContent = '';
             console.error('Error:', error);
         });
 }

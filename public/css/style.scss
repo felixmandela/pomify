@@ -1,4 +1,27 @@
-$font-stack: 400 16px 'Montserrat', sans-serif;
+$main-color: #f5f5f5;
+$secondary-color: #292929;
+$session-status-color: #bebebe;
+$session-status-color-ongoing: #000000;
+$session-status-color-break: #660e0e;
+$play-pause-color: #227e42;
+$pause-state-color: #af3333;
+$skip-color: #b9b9b9;
+$primary-bg-color: #FFFFFF;
+$secondary-bg-color: rgba(0, 0, 0, 0.1);
+$button-hover-color: #E5E5E5;
+$spotify-color: #1db954;
+$spotify-hover-color: #1ed760;
+$spotify-active-color: #1aa34a;
+$spotify-status-color: #EDEDED;
+$spotify-status-text-color: #292929;
+$primary-border-radius: 10px;
+$secondary-border-radius: 6px;
+$primary-border-stack: 2px solid black;
+$primary-box-shadow-stack: 7px 7px 0px 2px black;
+$secondary-border-stack: 1px solid black;
+$secondary-box-shadow-stack: 2px 2px 0px 1px black;
+$sidebar-border-stack: 2px solid black;
+$sidebar-box-shadow-stack: 5px 5px 0px 1px black;
 
 
 @mixin mqmax($width) {
@@ -8,34 +31,339 @@ $font-stack: 400 16px 'Montserrat', sans-serif;
 }
 
 
-@mixin flexbox($direction) {
-    display: flex;
-    flex-direction: $direction;
-
-}
-
+/* Global Styles */
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    font: $font-stack;
-    color: #ffffff;
-    text-align: center;
 }
 
-
-body,
-html {
-    background-color: #121212;
-    width: 100vw;
-    height: 100vh;
-    @include flexbox(column);
+body {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    align-content: center;
+    height: 100vh;
+    background: $main-color;
+    font-family: 'Monomaniac One', sans-serif;
 }
 
-.timer {
-    @include flexbox(row);
+/* Timer Styles */
+.timer-container {
+    position: relative;
+    padding: 30px;
+    width: 500px;
+    min-height: 300px;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    flex-direction: column;
+    border-radius: $primary-border-radius;
+    border: $primary-border-stack;
+    box-shadow: $primary-box-shadow-stack;
+
+    @include mqmax(620px) {
+        width: 360px;
+        align-items: center;
+    }
+
+    @include mqmax(450px) {
+        width: 320px;
+        align-items: center;
+    }
+
+    .timer {
+        font-size: 7rem;
+        color: $secondary-color;
+        line-height: 100%;
+    }
+
+    #session-status,
+    #break-status {
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        color: $session-status-color;
+    }
+
+    .progress-bar {
+        position: relative;
+        height: 20px;
+        width: 100%;
+        background: $secondary-bg-color;
+        border: $secondary-border-stack;
+        box-shadow: $secondary-box-shadow-stack;
+        margin-top: 20px;
+    }
+
+    .progress {
+        position: absolute;
+        height: 100%;
+        background: $secondary-color;
+    }
+}
+
+/* Controls and Settings Styles */
+.controls,
+.setting-container,
+.settings {
+    display: flex;
+}
+
+.controls {
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.settings {
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 20px;
+
+    label {
+        color: $secondary-color;
+        font-size: 1em;
+    }
+
+    input {
+        width: 60px;
+        text-align: center;
+        border: none;
+        font-size: 1.2em;
+    }
+}
+
+button {
+    font-size: 0.7em;
+    font-weight: bold;
+    border-radius: $secondary-border-radius;
+    width: 50%;
+    height: 40px;
     justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+    border: $secondary-border-stack;
+    box-shadow: $secondary-box-shadow-stack;
+}
+
+#settings-btn {
+    position: absolute;
+    bottom: -60px;
+    right: -2px;
+    width: 20%;
+    border: $primary-border-stack;
+    box-shadow: $primary-box-shadow-stack;
+}
+
+#play-pause-btn {
+    background-color: $play-pause-color;
+    /* Default color when showing "Play" */
+    color: $main-color;
+
+    &.pause {
+        background-color: $pause-state-color;
+        /* Color when showing "Pause" */
+        color: $main-color;
+    }
+}
+
+#skip-btn {
+    background-color: $skip-color;
+    /* Different color for the "Skip" button */
+    color: $secondary-color;
+}
+
+#play-pause-btn:hover,
+#skip-btn:hover,
+button:hover {
+    background: $secondary-color;
+    color: $button-hover-color;
+}
+
+/* Modal Styles */
+.modal {
+    visibility: hidden;
+    opacity: 0;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: $secondary-bg-color;
+    transition: opacity 0.5s, visibility 0.5s;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    .modal-content {
+        background-color: $primary-bg-color;
+        padding: 20px;
+        border: $primary-border-stack;
+        box-shadow: $primary-box-shadow-stack;
+        border-radius: $primary-border-radius;
+        width: 300px;
+        height: 230px;
+        transition: transform 0.5s;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+.modal.show {
+    visibility: visible;
+    opacity: 1;
+
+}
+
+#close-btn {
+    color: $secondary-color;
+    font-weight: bold;
+    cursor: pointer;
+    justify-self: flex-start;
+    align-self: flex-end;
+    position: relative;
+    top: -15px;
+}
+
+.setting-container {
+    justify-content: space-between;
+}
+
+#work-duration-label,
+#work-duration {
+    margin-bottom: 15px;
+}
+
+#work-duration-label,
+#work-duration,
+#break-duration-label,
+#break-duration {
+    border: $secondary-border-stack;
+    box-shadow: $secondary-box-shadow-stack;
+    font-size: 0.9rem;
+    padding: 3px;
+}
+
+#work-duration-label,
+#break-duration-label {
+    width: 70%;
+}
+
+#work-duration,
+#break-duration {
+    width: 20%;
+}
+
+#apply-settings {
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* Spotify Styles */
+.spotify-button {
+    margin-top: 1em;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    background: $spotify-color;
+    color: $main-color;
+    transition: background 0.3s;
+    width: 77%;
+    position: absolute;
+    bottom: -60px;
+    left: -2px;
+    border: $primary-border-stack;
+    box-shadow: $primary-box-shadow-stack;
+
+    &:hover {
+        background: $spotify-hover-color;
+    }
+
+    &:active {
+        background: $spotify-active-color;
+    }
+}
+
+/* Spotify Status Styles */
+#spotify-status {
+    background-color: $spotify-status-color;
+    color: $spotify-status-text-color;
+    padding: 10px;
+    font-family: 'Courier New', monospace;
+    border-radius: $secondary-border-radius;
+    box-shadow: inset 2px 2px 5px $spotify-status-text-color;
+    width: 100%;
+    height: 60px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+#initial-status,
+.status-container-1,
+.status-container-2 {
+    font-size: 0.8rem;
+}
+
+.status-container-1,
+.status-container-2 {
+    display: inline-block;
+    overflow: hidden;
+}
+
+.status-container-1 {
+    width: 40%;
+    text-align: right;
+}
+
+.status-container-2 {
+    width: 55%;
+}
+
+#spotify-device,
+#spotify-track {
+    white-space: nowrap;
+    animation: marquee 10s infinite linear;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0%);
+    }
+
+    25% {
+        transform: translateX(0%);
+    }
+
+    75% {
+        transform: translateX(-70%);
+    }
+
+    100% {
+        transform: translateX(-70%);
+    }
+}
+
+@keyframes breathe-ongoing {
+    0% {
+        color: $session-status-color;
+    }
+
+    50% {
+        color: $secondary-color;
+    }
+
+    100% {
+        color: $session-status-color;
+    }
+}
+
+.session-active {
+    animation: breathe-ongoing 3s infinite ease-in-out;
 }
