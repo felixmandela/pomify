@@ -103,13 +103,14 @@ body {
 }
 
 /* Controls and Settings Styles */
-.controls,
+
 .setting-container,
 .settings {
     display: flex;
 }
 
 .controls {
+    display: flex;
     justify-content: space-between;
     gap: 10px;
     width: 100%;
@@ -283,7 +284,8 @@ button:hover {
     box-shadow: $primary-box-shadow-stack;
 
     &:hover {
-        background: $spotify-hover-color;
+        background: $secondary-color;
+        color: $button-hover-color;
     }
 
     &:active {

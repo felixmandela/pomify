@@ -48,6 +48,10 @@ let timeLeft = workDuration;
 let timeSpent = 0; // Initialize timeSpent variable
 let currentSession = 1;
 
+const playNotificationSound = function () {
+    const switchSound = new Audio('assets/pomodoro-timers-up.mp3')
+    switchSound.play()
+}
 
 // time formatting
 function formatTime(time) {
@@ -81,6 +85,7 @@ function updateTimer() {
             timeLeft = isWorkTime ? workDuration : breakDuration;
             timeSpent = 0; // Reset timeSpent
             progressBar.style.width = "0%"; // Reset progress bar
+            playNotificationSound()
         }
     }
 }

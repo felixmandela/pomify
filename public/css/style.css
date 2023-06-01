@@ -68,13 +68,13 @@ body {
 }
 
 /* Controls and Settings Styles */
-.controls,
 .setting-container,
 .settings {
   display: flex;
 }
 
 .controls {
+  display: flex;
   justify-content: space-between;
   gap: 10px;
   width: 100%;
@@ -243,7 +243,8 @@ button:hover {
   box-shadow: 7px 7px 0px 2px black;
 }
 .spotify-button:hover {
-  background: #1ed760;
+  background: #292929;
+  color: #E5E5E5;
 }
 .spotify-button:active {
   background: #1aa34a;
