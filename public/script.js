@@ -20,7 +20,7 @@ openSpotifyButton.addEventListener('click', () => {
 
 loginButton.addEventListener('click', () => {
     // Make a GET request to the server's /login endpoint
-    fetch('http://localhost:3000/login')
+    fetch('https://pomify.vercel.app/login')
         .then(response => response.json())
         .then(data => {
             // Redirect the user to the Spotify authorization URL
@@ -145,7 +145,7 @@ function handlePlayback(isPlaying) {
     })
         .then(response => {
             if (response.status === 401) { // Access token has expired
-                fetch('http://localhost:3000/refresh_token')
+                fetch('https://pomify.vercel.app/refresh_token')
                     .then(response => response.json())
                     .then(data => {
                         accessToken = data.access_token; // Update the access token
