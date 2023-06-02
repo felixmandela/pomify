@@ -56,7 +56,7 @@ app.get('/callback', (req, res) => {
         .then(response => response.json())
         .then(data => {
             refreshToken = data.refresh_token;
-            res.redirect(`http://localhost:5500/pomodoro%20x%20spotify/public/?access_token=${data.access_token}`);
+            res.redirect(`https://pomify.vercel.app/?access_token=${data.access_token}`);
         });
 });
 
