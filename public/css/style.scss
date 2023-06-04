@@ -275,6 +275,7 @@ button:hover {
     text-decoration: none;
     background: $spotify-color;
     color: $main-color;
+    transition: background 0.3s;
     width: 77%;
     position: absolute;
     bottom: -60px;
