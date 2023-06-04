@@ -1,13 +1,34 @@
-// Variables and constants
-let spotifyAccessToken;
-let isWorkTime = true;
-let isPaused = true;
-let timeSpent = 0; // Initialize timeSpent variable
-let currentSession = 1;
-let workDuration, breakDuration, timeLeft;
-let isTempWorkDuration = null;
-let isTempBreakDuration = null;
-const urlSearchParams = new URLSearchParams(window.location.search);
+let accessToken;
+const loginButton = document.querySelector('#spotify-login-btn');
+const openSpotifyButton = document.querySelector('#open-spotify-btn');
+
+// Load the access token from the URL if present
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('access_token')) {
+    accessToken = urlParams.get('access_token');
+    // Hide the login button and show the "Open Spotify" button
+    loginButton.style.display = 'none';
+    openSpotifyButton.style.display = 'block';
+} else {
+    loginButton.style.display = 'block';
+    openSpotifyButton.style.display = 'none';
+}
+
+openSpotifyButton.addEventListener('click', () => {
+    window.open('https://open.spotify.com', '_blank');
+});
+
+loginButton.addEventListener('click', () => {
+    // Make a GET request to the server's /login endpoint
+    fetch('https://pomify.onrender.com/login')
+        .then(response => response.json())
+        .then(data => {
+            // Redirect the user to the Spotify authorization URL
+            window.location.href = data.url;
+        })
+        .catch(error => console.error(error));
+});
+
 const timerDisplay = document.querySelector('#timer');
 const playPauseButton = document.querySelector('#play-pause-btn');
 const skipButton = document.querySelector('#skip-btn');
@@ -16,19 +37,29 @@ const workDurationInput = document.querySelector('#work-duration');
 const breakDurationInput = document.querySelector('#break-duration');
 const sessionStatus = document.getElementById('session-status');
 const breakStatus = document.getElementById('break-status');
-const loginButton = document.querySelector('#spotify-login-btn');
-const openSpotifyButton = document.querySelector('#open-spotify-btn');
-const modal = document.getElementById("settings-modal");
-const settingsButton = document.getElementById("settings-btn");
-const closeButton = document.getElementById("close-btn");
-const applySettingsButton = document.getElementById("apply-settings");
 
-// Function definitions
+
+
+let isWorkTime = true;
+let isPaused = true;
+let workDuration = workDurationInput.value * 60; // get value from input
+let breakDuration = breakDurationInput.value * 60; // get value from input
+let timeLeft = workDuration;
+let timeSpent = 0; // Initialize timeSpent variable
+let currentSession = 1;
+
+const playNotificationSound = function () {
+    const switchSound = new Audio('assets/pomodoro-timers-up.mp3')
+    switchSound.play()
+}
+
+// time formatting
 function formatTime(time) {
     let minutes = Math.floor(time / 60);
     let seconds = time % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
+
 function updateTimer() {
     if (!isPaused) {
         if (timeLeft > 0) {
@@ -58,45 +89,174 @@ function updateTimer() {
         }
     }
 }
-function startNewSession() { // Increment the session count
+
+
+function startNewSession() {
+    // Increment the session count
     currentSession++;
+
     // Update the session text
     sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
     breakStatus.textContent = "Ongoing";
 }
-function managePlayback(isPlaying) {
+
+// When the Play button is clicked, start the Spotify playback
+playPauseButton.addEventListener('click', () => {
+    breakStatus.classList.add("session-active")
+    if (isPaused === false) {
+        isPaused = true;
+        playPauseButton.classList.remove('pause');
+        playPauseButton.classList.add('play');
+        playPauseButton.textContent = 'Play';
+        // Only handle playback if an access token exists
+        if (accessToken) {
+            handlePlayback(false); // Pause Spotify playback
+        }
+    } else {
+        isPaused = false;
+        playPauseButton.classList.remove('play');
+        playPauseButton.classList.add('pause');
+        playPauseButton.textContent = 'Pause';
+        // Only handle playback if an access token exists
+        if (accessToken) {
+            handlePlayback(true); // Start Spotify playback
+        }
+    }
+
+    if (isWorkTime === true) {
+        // If the session is not paused, change the text to "Ongoing"
+        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
+        breakStatus.textContent = `Ongoing`;
+    } else {
+        // If the session is paused, change the text to "Break"
+        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
+        breakStatus.textContent = `Break`;
+    }
+});
+
+
+
+// Start or pause Spotify playback
+function handlePlayback(isPlaying) {
     const url = isPlaying ? 'https://api.spotify.com/v1/me/player/play' : 'https://api.spotify.com/v1/me/player/pause';
     fetch(url, {
         method: 'PUT',
-        headers: { 'Authorization': 'Bearer ' + spotifyAccessToken }
+        headers: { 'Authorization': 'Bearer ' + accessToken }
     })
         .then(response => {
             if (response.status === 401) { // Access token has expired
                 fetch('https://pomify.onrender.com/refresh_token')
                     .then(response => response.json())
                     .then(data => {
-                        spotifyAccessToken = data.access_token; // Update the access token
-                        managePlayback(isPlaying); // Retry the playback request
+                        accessToken = data.access_token; // Update the access token
+                        handlePlayback(isPlaying); // Retry the playback request
                     })
                     .catch(error => console.error(error));
             }
         })
         .catch(error => console.error(error));
 }
-function playNotificationSound() {
-    const switchSound = new Audio('assets/pomodoro-timers-up.mp3')
-    switchSound.play()
+
+
+
+skipButton.addEventListener('click', () => {
+
+    if (isWorkTime === false) {
+        // If the session is not paused, change the text to "Ongoing"
+        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
+        breakStatus.textContent = "Ongoing";
+        startNewSession()
+    } else {
+        // If the session is paused, change the text to "Break"
+        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
+        breakStatus.textContent = "Break";
+    }
+
+    isWorkTime = !isWorkTime;
+    timeLeft = isWorkTime ? workDuration : breakDuration;
+    timeSpent = 0; // Reset timeSpent
+    progressBar.style.width = "0%"; // Reset progress bar
+    timerDisplay.textContent = formatTime(timeLeft);
+});
+
+
+// Update the timer every second
+let interval = setInterval(updateTimer, 1000);
+
+
+// settings modal
+let modal = document.getElementById("settings-modal");
+let settingsButton = document.getElementById("settings-btn");
+let closeButton = document.getElementById("close-btn");
+let modalContent = document.querySelector('.modal-content');
+let applySettingsButton = document.getElementById("apply-settings");
+
+let tempWorkDuration = null;
+let tempBreakDuration = null;
+
+settingsButton.onclick = function () {
+    modal.classList.add('show');
 }
+
+closeButton.onclick = function () {
+    modal.classList.remove('show');
+}
+
+window.onclick = function (event) {
+    if (event.target == modal) {
+        modal.classList.remove('show');
+    }
+}
+
+
+// Store the new settings temporarily
+workDurationInput.addEventListener('change', (e) => {
+    tempWorkDuration = e.target.value;
+});
+
+breakDurationInput.addEventListener('change', (e) => {
+    tempBreakDuration = e.target.value;
+});
+
+// Apply the new settings
+applySettingsButton.addEventListener('click', () => {
+    if (tempWorkDuration !== null) {
+        workDuration = tempWorkDuration * 60;
+        if (isWorkTime) {
+            timeLeft = workDuration;
+            timerDisplay.textContent = formatTime(timeLeft);
+        }
+    }
+
+    if (tempBreakDuration !== null) {
+        breakDuration = tempBreakDuration * 60;
+        if (!isWorkTime) {
+            timeLeft = breakDuration;
+            timerDisplay.textContent = formatTime(timeLeft);
+        }
+
+    }
+    // Reset temporary settings
+    tempWorkDuration = null;
+    tempBreakDuration = null;
+    // To reset progress bar
+    timeSpent = 0;
+    modal.classList.remove('show');
+});
+
+
+
+
 function fetchSpotifyPlayerState() {
     // Check if the user has logged in before trying to fetch the Spotify status
-    if (!spotifyAccessToken) {
+    if (!accessToken) {
         const initialStatus = document.querySelector('#initial-status');
         initialStatus.textContent = 'Link your Spotify account and play a song to synchronize the pomodoro timer with the music playback.';
         return;
     }
 
     fetch('https://api.spotify.com/v1/me/player', {
-        headers: { 'Authorization': 'Bearer ' + spotifyAccessToken }
+        headers: { 'Authorization': 'Bearer ' + accessToken }
     })
         .then(response => {
             if (!response.ok) {
@@ -152,114 +312,8 @@ function fetchSpotifyPlayerState() {
         });
 }
 
-// Event listeners
-openSpotifyButton.addEventListener('click', () => { window.open('https://open.spotify.com', '_blank'); });
-loginButton.addEventListener('click', () => {
-    // Make a GET request to the server's /login endpoint
-    fetch('https://pomify.onrender.com/login')
-        .then(response => response.json())
-        .then(data => {
-            // Redirect the user to the Spotify authorization URL
-            window.location.href = data.url;
-        })
-        .catch(error => console.error(error));
-});
-playPauseButton.addEventListener('click', () => {
-    breakStatus.classList.add("session-active")
-    if (isPaused === false) {
-        isPaused = true;
-        playPauseButton.classList.remove('pause');
-        playPauseButton.classList.add('play');
-        playPauseButton.textContent = 'Play';
-        // Only handle playback if an access token exists
-        if (spotifyAccessToken) {
-            managePlayback(false); // Pause Spotify playback
-        }
-    } else {
-        isPaused = false;
-        playPauseButton.classList.remove('play');
-        playPauseButton.classList.add('pause');
-        playPauseButton.textContent = 'Pause';
-        // Only handle playback if an access token exists
-        if (spotifyAccessToken) {
-            managePlayback(true); // Start Spotify playback
-        }
-    }
-
-    if (isWorkTime === true) {
-        // If the session is not paused, change the text to "Ongoing"
-        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
-        breakStatus.textContent = `Ongoing`;
-    } else {
-        // If the session is paused, change the text to "Break"
-        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
-        breakStatus.textContent = `Break`;
-    }
-});
-skipButton.addEventListener('click', () => {
-    if (isWorkTime === false) {
-        // If the session is not paused, change the text to "Ongoing"
-        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
-        breakStatus.textContent = "Ongoing";
-        startNewSession()
-    } else {
-        // If the session is paused, change the text to "Break"
-        sessionStatus.textContent = `Session ${currentSession.toString().padStart(2, '0')} || `;
-        breakStatus.textContent = "Break";
-    }
-
-    isWorkTime = !isWorkTime;
-    timeLeft = isWorkTime ? workDuration : breakDuration;
-    timeSpent = 0; // Reset timeSpent
-    progressBar.style.width = "0%"; // Reset progress bar
-    timerDisplay.textContent = formatTime(timeLeft);
-});
-workDurationInput.addEventListener('change', (e) => { isTempWorkDuration = e.target.value; });
-breakDurationInput.addEventListener('change', (e) => { isTempBreakDuration = e.target.value; });
-applySettingsButton.addEventListener('click', () => {
-    if (isTempWorkDuration !== null) {
-        workDuration = isTempWorkDuration * 60;
-        if (isWorkTime) {
-            timeLeft = workDuration;
-            timerDisplay.textContent = formatTime(timeLeft);
-        }
-    }
-
-    if (isTempBreakDuration !== null) {
-        breakDuration = isTempBreakDuration * 60;
-        if (!isWorkTime) {
-            timeLeft = breakDuration;
-            timerDisplay.textContent = formatTime(timeLeft);
-        }
-
-    }
-    // Reset temporary settings
-    isTempWorkDuration = null;
-    isTempBreakDuration = null;
-    // To reset progress bar
-    timeSpent = 0;
-    modal.classList.remove('show');
-});
-settingsButton.onclick = function () { modal.classList.add('show'); };
-closeButton.onclick = function () { modal.classList.remove('show'); };
-window.onclick = function (event) {
-    if (event.target == modal) {
-        modal.classList.remove('show');
-    }
-};
-
-// Initial actions
-if (urlSearchParams.has('access_token')) {
-    spotifyAccessToken = urlSearchParams.get('access_token');
-    // Hide the login button and show the "Open Spotify" button
-    loginButton.style.display = 'none';
-    openSpotifyButton.style.display = 'block';
-} else {
-    loginButton.style.display = 'block';
-    openSpotifyButton.style.display = 'none';
-}
-workDuration = workDurationInput.value * 60;
-breakDuration = breakDurationInput.value * 60;
-timeLeft = workDuration;
-let timeUpdateInterval = setInterval(updateTimer, 1000);
+// Call the function every 5 seconds to keep the status updated
 setInterval(fetchSpotifyPlayerState, 5000);
+
+
+
