@@ -27,8 +27,8 @@
             <div class="progress" id="progress"></div>
         </div>
         <div class="controls">
-            <button id="play-pause-btn" class="play">Play</button>
-            <button id="skip-btn">Skip</button>
+            <button id="play-pause-btn" class="play" aria-label="Play Pause Button">Play</button>
+            <button id="skip-btn" aria-label="Skip Button">Skip</button>
         </div>
 
         <div id="spotify-status">
@@ -46,10 +46,12 @@
                 <p id="spotify-device"></p>
             </div>
         </div>
-        <button id="spotify-login-btn" class="spotify-button">Connect to Spotify</button>
-        <button id="open-spotify-btn" class="spotify-button" style="display: none;">Open Spotify</button>
+        <button id="spotify-login-btn" class="spotify-button" aria-label="Connect to Spotify Button">Connect to
+            Spotify</button>
+        <button id="open-spotify-btn" class="spotify-button" style="display: none;"
+            aria-label="Open Spotify Button">Open Spotify</button>
 
-        <button id="settings-btn">Settings</button>
+        <button id="settings-btn" aria-label="Settings Button">Settings</button>
 
         <div id="settings-modal" class="modal">
             <div class="modal-content">
@@ -64,7 +66,7 @@
                         <input type="number" id="break-duration" min="1" value="5">
                     </div>
                 </div>
-                <button id="apply-settings">Apply Changes</button>
+                <button id="apply-settings" aria-label="Apply Changes Button">Apply Changes</button>
             </div>
         </div>
     </div>
