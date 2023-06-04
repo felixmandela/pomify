@@ -8,6 +8,8 @@ let workDuration, breakDuration, timeLeft;
 let isTempWorkDuration = null;
 let isTempBreakDuration = null;
 const urlSearchParams = new URLSearchParams(window.location.search);
+
+// DOM selectors
 const timerDisplay = document.querySelector('#timer');
 const playPauseButton = document.querySelector('#play-pause-btn');
 const skipButton = document.querySelector('#skip-btn');
