@@ -6,20 +6,18 @@ import { config } from 'dotenv';
 
 config();
 
-const app = express();
-app.use(cors());
-
+// Variables and constants
 const PORT = process.env.PORT || 3000;
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
-
 let refreshToken = '';
 
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
-});
+const app = express();
+app.use(cors());
 
+// Route handlers
+app.get('/', (req, res) => { res.send('Hello, World!'); });
 app.get('/login', (req, res) => {
     const scopes = 'user-read-playback-state user-modify-playback-state';
     res.json({
@@ -32,8 +30,6 @@ app.get('/login', (req, res) => {
         })}`
     });
 });
-
-// get code after authorize
 app.get('/callback', (req, res) => {
     const code = req.query.code;
     const params = {
@@ -59,9 +55,6 @@ app.get('/callback', (req, res) => {
             res.redirect(`https://pomify.vercel.app/?access_token=${data.access_token}`);
         });
 });
-
-
-
 app.get('/refresh_token', (req, res) => {
     const params = {
         grant_type: 'refresh_token',
@@ -89,9 +82,5 @@ app.get('/refresh_token', (req, res) => {
         });
 });
 
-
-
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
+// Server initialization
+app.listen(PORT, () => { console.log(`Server is running on port ${PORT}`); });
